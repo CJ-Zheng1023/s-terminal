@@ -1,0 +1,32 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+
+Vue.use(Router)
+
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'Home',
+      component: require('@/components/Home').default,
+      children: [
+        {
+          path: 'setting',
+          name: 'landing-page',
+          component: require('@/components/LandingPage').default
+        },
+        {
+          path: 'about',
+          name: 'about',
+          component: {
+            template: `<div>about</div>`
+          }
+        }
+      ]
+    },
+    {
+      path: '*',
+      redirect: '/'
+    }
+  ]
+})
