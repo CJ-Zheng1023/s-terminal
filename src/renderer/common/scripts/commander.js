@@ -104,6 +104,9 @@ let cmdDownArrow = (vm) => {
  * @param vm  vue实例
  */
 let addText = (e, vm) => {
+  if (e.keyCode === 16) {
+    return
+  }
   if (vm.cursorIndex === -1) {
     vm.input += e.key
   } else {
