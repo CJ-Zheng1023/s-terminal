@@ -1,13 +1,37 @@
 <template>
     <div class="command-wrapper" tabindex="-1" @click="activePanel" @keydown="subscribeToKey">
-        <div class="command-line">{{msg}}<span class="cursor"></span></div>
+        <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result']" class="line" v-for="item in contents" :key="item.id">{{item.words}}</div>
+        <div class="line line-command" v-html="inputHtml"></div>
     </div>
 </template>
 <script>
+    import Commander from '@/common/scripts/commander'
     export default {
       data () {
         return {
-          msg: ''
+          input: '',
+          historyInput: [],
+          contents: [],
+          // -1表示光标在结尾
+          cursorIndex: -1,
+          // -1表示未选中历史命令
+          historyIndex: -1
+        }
+      },
+      computed: {
+        inputHtml () {
+          let html = ''
+          let cursorIndex = this.cursorIndex
+          let input = this.input
+          if (cursorIndex === -1) {
+            html = input.replace(/ /g, '&nbsp;') + `<span class="cursor cursor-blank"></span>`
+          } else {
+            let left = input.slice(0, cursorIndex).replace(/ /g, '&nbsp;')
+            let cur = input.charAt(cursorIndex).replace(/ /g, '&nbsp;')
+            let right = input.slice(cursorIndex + 1).replace(/ /g, '&nbsp;')
+            html = `${left}<span class="cursor">${cur}</span>${right}`
+          }
+          return html
         }
       },
       methods: {
@@ -15,7 +39,7 @@
           e.target.focus()
         },
         subscribeToKey (e) {
-          this.msg += e.key
+          Commander.init(e, this)
         }
       }
     }
@@ -32,34 +56,41 @@
         border: none;
         outline: none;
     }
-    .command-line{
-        position: relative;
-        height: 20px;
+    .line{
         line-height: 20px;
         word-wrap: break-word;
         word-break: break-all;
     }
-    .command-line:last-child{
-        display: inline-block;
+    .line.line-command{
+        position: relative;
+        height: 20px;
         padding-left: 15px;
+    }
+    .line.line-command:last-child{
+        display: inline-block;
         min-height: 1px;
     }
-    .command-line:last-child:before{
+    .line.line-command:before{
         position: absolute;
         left: 0;
         top: 0;
         content: ">";
     }
+    .line.line-result{
+
+    }
     .cursor{
         position: relative;
         display: inline-block;
-        top: 2px;
-        left: 5px;
-        width: 8px;
-        height: 15px;
         background-color: inherit;
         box-sizing: border-box;
         border: 1px solid #9cdaba;
+    }
+    .cursor.cursor-blank{
+        left: 3px;
+        top: 3px;
+        min-width: 10px;
+        min-height: 18px;
     }
     .command-wrapper:focus .cursor{
         background-color: #9cdaba;
