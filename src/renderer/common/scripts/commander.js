@@ -104,7 +104,9 @@ let cmdDownArrow = (vm) => {
  * @param vm  vue实例
  */
 let addText = (e, vm) => {
-  if (e.keyCode === 16) {
+  let keyCode = e.keyCode
+  // 排除无意义的键盘键
+  if (_specialKeys.includes(keyCode) || (keyCode >= 96 && keyCode <= 186) || (keyCode >= 193 && keyCode <= 254)) {
     return
   }
   if (vm.cursorIndex === -1) {
@@ -127,6 +129,10 @@ const _keyMap = {
   39: cmdRightArrow,
   40: cmdDownArrow
 }
+/**
+ *无业务意义的键盘Keycode
+ */
+const _specialKeys = [9, 12, 16, 17, 18, 19, 20, 27, 33, 34, 35, 36, 41, 42, 43, 45, 46, 47]
 export default {
   init (e, vm) {
     let keyCode = e.keyCode

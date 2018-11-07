@@ -24,7 +24,7 @@
           let cursorIndex = this.cursorIndex
           let input = this.input
           if (cursorIndex === -1) {
-            html = input.replace(/ /g, '&nbsp;') + `<span class="cursor cursor-blank"></span>`
+            html = input.replace(/ /g, '&nbsp;') + `<span class="cursor cursor-blank">&nbsp;</span>`
           } else {
             let left = input.slice(0, cursorIndex).replace(/ /g, '&nbsp;')
             let cur = input.charAt(cursorIndex).replace(/ /g, '&nbsp;')
@@ -63,7 +63,6 @@
     }
     .line.line-command{
         position: relative;
-        height: 20px;
         padding-left: 15px;
     }
     .line.line-command:last-child{
@@ -80,17 +79,12 @@
 
     }
     .cursor{
-        position: relative;
-        display: inline-block;
         background-color: inherit;
         box-sizing: border-box;
         border: 1px solid #9cdaba;
     }
     .cursor.cursor-blank{
-        left: 3px;
-        top: 3px;
-        min-width: 10px;
-        min-height: 18px;
+
     }
     .command-wrapper:focus .cursor{
         background-color: #9cdaba;
