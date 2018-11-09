@@ -104,9 +104,11 @@
           if (pagination.start + pagination.size > pagination.total) {
             return false
           }
-          this.queryProcessList({start: pagination.start + pagination.size, size: 10}).then(() => {
-            this.processScroll.refresh()
-          })
+          if (this.processScroll.y <= (this.processScroll.maxScrollY + 50)) {
+            this.queryProcessList({start: pagination.start + pagination.size, size: 10}).then(() => {
+              // this.processScroll.refresh()
+            })
+          }
         })
       })
       this.$nextTick(() => {
