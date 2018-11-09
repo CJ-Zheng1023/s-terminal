@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import axios from 'axios'
+// import axios from '@/common/axios'
 
 import App from './App'
 import router from './router'
@@ -14,7 +14,7 @@ import '@/common/styles/styles.css'
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.use(ElementUI)
 Vue.use(VTooltip)
-Vue.http = Vue.prototype.$http = axios
+// Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

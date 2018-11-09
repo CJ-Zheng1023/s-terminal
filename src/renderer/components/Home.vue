@@ -63,6 +63,7 @@
 <script>
   import BScroll from 'better-scroll'
   import Command from './Command'
+  import {mapState, mapActions} from 'vuex'
   export default {
     components: {
       Command
@@ -70,50 +71,24 @@
     data () {
       return {
         searchInput: '',
-        processList: [
-          {
-            id: '1',
-            title: '标题1',
-            description: '统计批处理程序',
-            active: false
-          },
-          {
-            id: '2',
-            title: '批处理程序',
-            description: '没有内容的批处理程序',
-            active: true
-          },
-          {
-            id: '3',
-            title: '这是什么标题',
-            description: '干什么，做什么',
-            active: false
-          },
-          {
-            id: '4',
-            title: '标题1',
-            description: '统计批处理程序',
-            active: false
-          },
-          {
-            id: '5',
-            title: '批处理程序',
-            description: '没有内容的批处理程序',
-            active: false
-          },
-          {
-            id: '6',
-            title: '这是什么标题',
-            description: '干什么，做什么',
-            active: false
-          }
-        ]
+        processListLoading: false
       }
     },
+    computed: {
+      ...mapState('Process', [
+        'processList',
+        'pagination'
+      ])
+    },
+    methods: {
+      ...mapActions('Process', [
+        'queryProcessList'
+      ])
+    },
     mounted () {
-      this.$nextTick(() => {
+      this.queryProcessList({start: 0, size: 10}).then(() => {
         this.processScroll = new BScroll(this.$refs.processListScroll, {
-          probeType: 3,
+          probeType: 1,
           click: true,
           mouseWheel: {
             speed: 20,
@@ -124,8 +99,19 @@
             interactive: true
           }
         })
+        this.processScroll.on('scrollEnd', () => {
+          let pagination = this.pagination
+          if (pagination.start + pagination.size > pagination.total) {
+            return false
+          }
+          this.queryProcessList({start: pagination.start + pagination.size, size: 10}).then(() => {
+            this.processScroll.refresh()
+          })
+        })
+      })
+      this.$nextTick(() => {
         this.commandScroll = new BScroll(this.$refs.commandListScroll, {
-          probeType: 3,
+          probeType: 1,
           click: true,
           mouseWheel: {
             speed: 20,
@@ -246,10 +232,16 @@
         height: 100%;
         overflow: hidden;
     }
+    .process-list ul{
+        padding: 0;
+    }
     .process-list li{
         padding: 20px 30px;
         border-bottom: 1px solid #5a5d63;
         position: relative;
+        word-break: break-all;
+        word-wrap: break-word;
+        line-height: 20px;
     }
     .process-list li .actions{
         position: absolute;
