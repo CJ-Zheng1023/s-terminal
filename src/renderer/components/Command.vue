@@ -1,10 +1,13 @@
 <template>
-    <div class="command-wrapper" tabindex="-1" @click="activePanel" @keydown="subscribeToKey">
-        <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result']" class="line" v-for="item in contents" :key="item.id">{{item.words}}</div>
-        <div class="line line-command" v-html="inputHtml"></div>
+    <div class="scroller" ref="scroller">
+        <div class="command-wrapper" tabindex="-1" @click="activePanel" @keydown="subscribeToKey">
+            <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result']" class="line" v-for="item in contents" :key="item.id">{{item.words}}</div>
+            <div class="line line-command" v-html="inputHtml"></div>
+        </div>
     </div>
 </template>
 <script>
+    import BScroll from 'better-scroll'
     import Commander from '@/common/scripts/commander'
     export default {
       data () {
@@ -17,6 +20,22 @@
           // -1表示未选中历史命令
           historyIndex: -1
         }
+      },
+      mounted () {
+        this.$nextTick(() => {
+          this.scroller = new BScroll(this.$refs.scroller, {
+            probeType: 1,
+            click: true,
+            mouseWheel: {
+              speed: 20,
+              invert: false
+            },
+            scrollbar: {
+              fade: false,
+              interactive: true
+            }
+          })
+        })
       },
       computed: {
         inputHtml () {
@@ -51,6 +70,7 @@
         box-sizing: border-box;
         color: #fff;
         font-size: 15px;
+        background-color: #2f3136;
     }
     .command-wrapper:focus{
         border: none;
@@ -89,6 +109,10 @@
     .command-wrapper:focus .cursor{
         background-color: #9cdaba;
         animation: cursor-blink 1.2s infinite;
+    }
+    .scroller{
+        height: 100%;
+        overflow: hidden;
     }
     @keyframes cursor-blink {
         0%{

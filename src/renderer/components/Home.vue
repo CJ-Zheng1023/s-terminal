@@ -6,9 +6,10 @@
                 <span>批处理系统</span>
             </div>
             <div class="actions">
-                <i class="fa fa-cog" v-tooltip.top-center="'设置'"></i>
+                <router-link to="/setting" tag="i" class="fa fa-cog" v-tooltip.top-center="'设置'"></router-link>
+                <router-link to="/" tag="i" class="fa fa-cog" v-tooltip.top-center="'返回'"></router-link>
                 <span class="separation"></span>
-                <el-dropdown trigger="click">
+                <el-dropdown v-if="username" trigger="click">
                     <span class="el-dropdown-link">
                         郑成杰
                         <i class="el-icon-arrow-down el-icon--right"></i>
@@ -18,6 +19,7 @@
                         <el-dropdown-item>退出</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
+                <el-button size="mini" type="warning" class="btn-login" @click="showLoginDialog = true" v-else>未登录</el-button>
             </div>
         </header>
         <div class="wrapper">
@@ -52,27 +54,31 @@
             </aside>
             <main>
                 <div class="inner">
-                    <div class="command-list" ref="commandListScroll">
-                        <command></command>
-                    </div>
+                    <keep-alive>
+                        <router-view></router-view>
+                    </keep-alive>
                 </div>
             </main>
         </div>
+        <login v-if="showLoginDialog"></login>
     </div>
 </template>
 <script>
   import BScroll from 'better-scroll'
-  import Command from './Command'
   import {mapState, mapActions} from 'vuex'
+  import Utils from '@/common/scripts/utils'
+  import Login from '@/components/Login'
   export default {
-    components: {
-      Command
-    },
     data () {
       return {
         searchInput: '',
-        processListLoading: false
+        processListLoading: false,
+        username: Utils.getUserName(),
+        showLoginDialog: false
       }
+    },
+    components: {
+      Login
     },
     computed: {
       ...mapState('Process', [
@@ -99,29 +105,21 @@
             interactive: true
           }
         })
+        // 滚动条到达底部触发加载数据
         this.processScroll.on('scrollEnd', () => {
+          if (this.processListLoading) {
+            return false
+          }
           let pagination = this.pagination
           if (pagination.start + pagination.size > pagination.total) {
             return false
           }
           if (this.processScroll.y <= (this.processScroll.maxScrollY + 50)) {
+            this.processListLoading = true
             this.queryProcessList({start: pagination.start + pagination.size, size: 10}).then(() => {
               // this.processScroll.refresh()
+              this.processListLoading = false
             })
-          }
-        })
-      })
-      this.$nextTick(() => {
-        this.commandScroll = new BScroll(this.$refs.commandListScroll, {
-          probeType: 1,
-          click: true,
-          mouseWheel: {
-            speed: 20,
-            invert: false
-          },
-          scrollbar: {
-            fade: false,
-            interactive: true
           }
         })
       })
@@ -181,6 +179,7 @@
         left: 0;
         right: 0;
         bottom: 0;
+        z-index: 1;
     }
 
     .wrapper aside {
@@ -295,15 +294,18 @@
         height: 100%;
         margin-left: 300px;
         overflow: auto;
-        background-color: #2f3136;
     }
     main .inner{
         height: 100%;
         flex-basis: auto;
         width: 100%;
     }
-    main .inner .command-list{
-        height: 100%;
-        overflow: hidden;
+    .btn-login{
+        background-color: #ff6c2f;
+        border-color: #ff6c2f;
+    }
+    .btn-login:hover{
+        background-color: #ff902e;
+        border-color: #ff902e;
     }
 </style>

@@ -3,24 +3,23 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
   routes: [
     {
       path: '/',
       name: 'Home',
+      redirect: '/command',
       component: require('@/components/Home').default,
       children: [
         {
-          path: 'setting',
-          name: 'landing-page',
-          component: require('@/components/Home').default
+          path: 'command',
+          name: 'command',
+          component: require('@/components/Command').default
         },
         {
-          path: 'about',
-          name: 'about',
-          component: {
-            template: `<div>about</div>`
-          }
+          path: 'setting',
+          name: 'setting',
+          component: require('@/components/Setting').default
         }
       ]
     },
@@ -30,3 +29,4 @@ export default new Router({
     }
   ]
 })
+export default router

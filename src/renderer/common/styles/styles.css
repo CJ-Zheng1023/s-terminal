@@ -106,3 +106,20 @@
     opacity: 1;
     transition: opacity .15s;
 }
+.form-item .input-icon input{
+    padding-left: 33px;
+}
+.form-item i{
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ccc;
+    z-index: 1;
+}
+.is-error.form-item i{
+    color: rgb(245, 108, 108);
+}
+.el-input__inner:focus{
+    border-color: #c0c4cc;
+}
