@@ -7,7 +7,7 @@
       </div>
       <div class="actions">
         <router-link to="/setting" tag="i" class="fa fa-cog" v-tooltip.top-center="'设置'"></router-link>
-        <router-link to="/" tag="i" class="fa fa-cog" v-tooltip.top-center="'返回'"></router-link>
+        <router-link to="/command" tag="i" class="fa fa-cog" v-tooltip.top-center="'返回'"></router-link>
         <span class="separation"></span>
         <el-dropdown v-if="username" trigger="click" @command="dropdownCommand">
                     <span class="el-dropdown-link">
@@ -38,15 +38,15 @@
           <div class="inner-body">
             <div class="process-list" ref="processListScroll">
               <ul>
-                <li :class="{active: item.active}" v-for="item in processList" :key="item.id">
+                <router-link tag="li" :to="{path: `/process/view/${item.id}`}" :class="{active: item.active}" v-for="item in processList" :key="item.id">
                   <h3>{{item.title}}</h3>
                   <p>{{item.description}}</p>
                   <div class="actions">
                     <i class="fa fa-play-circle-o btn-run" v-tooltip.top-center="'运行程序'"></i>
-                    <i class="fa fa-edit btn-edit" v-tooltip.top-center="'修改程序'" @click="openSaveDialog('修改批处理',item)"></i>
-                    <i class="fa fa-close btn-delete" v-tooltip.top-center="'删除程序'" @click="deleteItem(item)"></i>
+                    <i class="fa fa-edit btn-edit" v-tooltip.top-center="'修改程序'" @click.stop="openSaveDialog('修改批处理',item)"></i>
+                    <i class="fa fa-close btn-delete" v-tooltip.top-center="'删除程序'" @click.stop="deleteItem(item)"></i>
                   </div>
-                </li>
+                </router-link>
               </ul>
             </div>
           </div>
@@ -381,9 +381,11 @@
 
   .process-list ul {
     padding: 0;
+    margin: 0;
   }
 
   .process-list li {
+    cursor: pointer;
     padding: 20px 30px;
     border-bottom: 1px solid #5a5d63;
     position: relative;
