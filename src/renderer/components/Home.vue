@@ -32,7 +32,7 @@
             </div>
             <div class="title-item">
               <span>批处理列表</span>
-              <i class="fa fa-plus-square-o" v-tooltip.top-center="'新建批处理'"></i>
+              <i class="fa fa-plus-square-o" v-tooltip.top-center="'新建批处理'" @click="openSaveDialog('新建批处理')"></i>
             </div>
           </div>
           <div class="inner-body">
@@ -42,9 +42,9 @@
                   <h3>{{item.title}}</h3>
                   <p>{{item.description}}</p>
                   <div class="actions">
-                    <i class="fa fa-check btn-run" v-tooltip.top-center="'运行程序'"></i>
-                    <i class="fa fa-edit btn-edit" v-tooltip.top-center="'修改程序'"></i>
-                    <i class="fa fa-close btn-delete" v-tooltip.top-center="'删除程序'"></i>
+                    <i class="fa fa-play-circle-o btn-run" v-tooltip.top-center="'运行程序'"></i>
+                    <i class="fa fa-edit btn-edit" v-tooltip.top-center="'修改程序'" @click="openSaveDialog('修改批处理',item)"></i>
+                    <i class="fa fa-close btn-delete" v-tooltip.top-center="'删除程序'" @click="deleteItem(item)"></i>
                   </div>
                 </li>
               </ul>
@@ -61,6 +61,23 @@
       </main>
     </div>
     <login v-if="showLoginDialog" @close="showLoginDialog = false"></login>
+    <el-dialog :title="title" :visible.sync="showSaveDialog" @close="closeSaveDialog">
+      <el-form :model.sync="process" :rules="processRules" :label-width="formLabelWidth" ref="processForm">
+        <el-form-item label="批处理名称" prop="title">
+          <el-input v-model="process.title" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="批处理描述" prop="description">
+          <el-input type="textarea" rows="3" v-model="process.description"></el-input>
+        </el-form-item>
+        <el-form-item label="批处理代码" prop="code">
+          <el-input type="textarea" rows="6" v-model="process.code"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="closeSaveDialog" size="small">关 闭</el-button>
+        <el-button :loading="saveBtnLoading" type="warning" class="btn-login" size="small" @click="saveProcessForm">保 存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -73,9 +90,30 @@
     data () {
       return {
         searchInput: '',
+        title: '',
         processListLoading: false,
         username: Utils.getUserName(),
-        showLoginDialog: false
+        showLoginDialog: false,
+        showSaveDialog: false,
+        formLabelWidth: '100px',
+        saveBtnLoading: false,
+        process: {
+          id: '',
+          title: '',
+          description: '',
+          code: ''
+        },
+        processRules: {
+          title: [
+            {required: true, message: '请输入批处理标题', trigger: 'blur'}
+          ],
+          description: [
+            {required: true, message: '请输入批处理描述', trigger: 'blur'}
+          ],
+          code: [
+            {required: true, message: '平输入批处理代码', trigger: 'blur'}
+          ]
+        }
       }
     },
     components: {
@@ -88,8 +126,96 @@
       ])
     },
     methods: {
+      deleteItem (item) {
+        this.$confirm(`此操作将永久删除批处理'${item.title}',是否继续?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.deleteProcess(item.id).then(flag => {
+            if (flag) {
+              this.$alert(`批处理'${item.title}'删除成功`, '提示', {
+                type: 'success',
+                confirmButtonText: '确定',
+                callback: action => {
+                  this.showProcessList()
+                }
+              })
+            } else {
+              this.$notify.error({
+                title: '错误信息',
+                message: `批处理'${item.title}'删除失败`
+              })
+            }
+          }).catch(e => {
+            this.$notify.error({
+              title: '错误信息',
+              message: `批处理'${item.title}'删除失败`
+            })
+          })
+        })
+      },
+      openSaveDialog (title, item) {
+        this.title = title
+        if (item) {
+          this.process.title = item.title
+          this.process.description = item.description
+          this.process.code = item.code
+          this.process.id = item.id
+        }
+        this.showSaveDialog = true
+      },
+      closeSaveDialog () {
+        this.showSaveDialog = false
+        this.$refs['processForm'].resetFields()
+      },
+      saveProcessForm () {
+        this.$refs['processForm'].validate((valid) => {
+          if (valid) {
+            let {id, title, description, code} = this.process
+            this.saveBtnLoading = true
+            this.saveProcess({id, title, description, code}).then(data => {
+              if (data.flag === 2) {
+                this.$notify.error({
+                  title: '错误信息',
+                  message: '您输入的标题已被占用'
+                })
+              } else if (data.flag === 0) {
+                this.$notify.error({
+                  title: '错误信息',
+                  message: '保存失败'
+                })
+              } else {
+                this.$alert('保存成功', '提示', {
+                  type: 'success',
+                  confirmButtonText: '确定',
+                  callback: action => {
+                    let proc = data.process
+                    if (id) {
+                      this.updateProcess(proc)
+                    } else {
+                      this.addProcess(proc)
+                    }
+                    this.closeSaveDialog()
+                  }
+                })
+              }
+              this.saveBtnLoading = false
+            }).catch(e => {
+              this.$notify.error({
+                title: '错误信息',
+                message: '保存失败'
+              })
+              this.saveBtnLoading = false
+            })
+          }
+        })
+      },
       showProcessList () {
-        this.queryProcessList({start: 0, size: 10}).then(() => {
+        this.queryProcessList({start: 0, size: 10, ifAppend: false}).then(() => {
+          if (this.processScroll) {
+            return false
+          }
           this.processScroll = new BScroll(this.$refs.processListScroll, {
             probeType: 1,
             click: true,
@@ -113,7 +239,7 @@
             }
             if (this.processScroll.y <= (this.processScroll.maxScrollY + 50)) {
               this.processListLoading = true
-              this.queryProcessList({start: pagination.start + pagination.size, size: 10}).then(() => {
+              this.queryProcessList({start: pagination.start + pagination.size, size: 10, ifAppend: true}).then(() => {
                 // this.processScroll.refresh()
                 this.processListLoading = false
               })
@@ -128,7 +254,11 @@
         }
       },
       ...mapActions('Process', [
-        'queryProcessList'
+        'queryProcessList',
+        'saveProcess',
+        'addProcess',
+        'updateProcess',
+        'deleteProcess'
       ])
     },
     mounted () {
@@ -341,5 +471,8 @@
   .btn-login:hover {
     background-color: #ff902e;
     border-color: #ff902e;
+  }
+  .el-textarea textarea{
+    height: 100px;
   }
 </style>

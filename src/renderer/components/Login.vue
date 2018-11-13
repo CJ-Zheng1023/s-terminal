@@ -27,7 +27,7 @@
         </div>
         <div class="box-footer">
           <div class="actions">
-            <span href="javascript:;" @click="changeBox">注册新用户</span>
+            <span @click="changeBox">注册新用户</span>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@
         </div>
         <div class="box-footer">
           <div class="actions">
-            <span href="javascript:;" @click="changeBox">用户登录</span>
+            <span @click="changeBox">用户登录</span>
           </div>
         </div>
       </div>
@@ -64,8 +64,9 @@
   </div>
 </template>
 <script>
-  import {mapState, mapActions} from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   import Utils from '@/common/scripts/utils'
+
   export default {
     data () {
       return {
@@ -132,6 +133,7 @@
                 })
               } else {
                 this.$alert('注册成功，请您在登录窗口登录', '提示', {
+                  type: 'success',
                   confirmButtonText: '确定',
                   callback: action => {
                     this.changeBox()

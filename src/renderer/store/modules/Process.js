@@ -9,16 +9,39 @@ export default {
     }
   },
   mutations: {
-    queryProcessList (state, data) {
-      state.processList.push(...data.processList)
-      state.pagination = data.pagination
+    queryProcessList (state, obj) {
+      if (obj.ifAppend) {
+        state.processList.push(...obj.data.processList)
+      } else {
+        state.processList = obj.data.processList
+      }
+      state.pagination = obj.data.pagination
+    },
+    addProcess (state, process) {
+      state.processList.unshift(process)
+    },
+    updateProcess (state, process) {
+      state.processList.forEach(item => {
+        if (item.id === process.id) {
+          item.title = process.title
+          item.description = process.description
+          item.code = process.code
+        }
+      })
     }
   },
   actions: {
-    queryProcessList ({commit}, {start, size}) {
+    /**
+     * @param commit
+     * @param start
+     * @param size
+     * @param ifAppend  是否给集合追加数据  true追加     false重置集合
+     * @returns {Promise}
+     */
+    queryProcessList ({commit}, {start, size, ifAppend}) {
       return new Promise((resolve, reject) => {
         axios.get(`${MODULE_CONTEXT}/list?start=${start}&size=${size}`).then(response => {
-          commit('queryProcessList', response.data)
+          commit('queryProcessList', {data: response.data, ifAppend})
           resolve()
         }).catch(e => {
           console.log(e)
@@ -26,29 +49,25 @@ export default {
         })
       })
     },
-    addProcess ({commit}, process) {
+    saveProcess ({commit}, process) {
       return new Promise((resolve, reject) => {
-        axios.post(`${MODULE_CONTEXT}/add`, process).then(response => {
-          resolve(response.data.flag)
+        axios.post(`${MODULE_CONTEXT}/save`, process).then(response => {
+          resolve(response.data)
         }).catch(e => {
           console.log(e)
           reject(e)
         })
       })
+    },
+    addProcess ({commit}, process) {
+      commit('addProcess', process)
+    },
+    updateProcess ({commit}, process) {
+      commit('updateProcess', process)
     },
     deleteProcess ({commit}, id) {
       return new Promise((resolve, reject) => {
         axios.post(`${MODULE_CONTEXT}/delete`, {id}).then(response => {
-          resolve(response.data.flag)
-        }).catch(e => {
-          console.log(e)
-          reject(e)
-        })
-      })
-    },
-    editProcess ({commit}, process) {
-      return new Promise((resolve, reject) => {
-        axios.post(`${MODULE_CONTEXT}/edit`, process).then(response => {
           resolve(response.data.flag)
         }).catch(e => {
           console.log(e)

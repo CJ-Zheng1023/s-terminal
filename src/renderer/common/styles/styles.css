@@ -120,6 +120,6 @@
 .is-error.form-item i{
     color: rgb(245, 108, 108);
 }
-.el-input__inner:focus{
+.el-input__inner:focus, .el-textarea__inner:focus{
     border-color: #c0c4cc;
 }
