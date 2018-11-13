@@ -10,6 +10,9 @@ export default {
   },
   mutations: {
     queryProcessList (state, obj) {
+      obj.data.processList.forEach(item => {
+        item.active = false
+      })
       if (obj.ifAppend) {
         state.processList.push(...obj.data.processList)
       } else {
@@ -26,6 +29,15 @@ export default {
           item.title = process.title
           item.description = process.description
           item.code = process.code
+        }
+      })
+    },
+    activeProcess (state, id) {
+      state.processList.forEach(item => {
+        if (id === item.id) {
+          item.active = true
+        } else {
+          item.active = false
         }
       })
     }
@@ -74,6 +86,9 @@ export default {
           reject(e)
         })
       })
+    },
+    activeProcess ({commit}, id) {
+      commit('activeProcess', id)
     }
   }
 }

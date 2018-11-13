@@ -20,11 +20,6 @@ let router = new Router({
           path: 'setting',
           name: 'setting',
           component: require('@/components/Setting').default
-        },
-        {
-          path: 'process/view/:id',
-          name: 'process-view',
-          component: require('@/components/View').default
         }
       ]
     },
