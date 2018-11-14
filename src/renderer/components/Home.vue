@@ -52,7 +52,7 @@
       </aside>
       <main :class="[username ? '' : 'full-width']">
         <div class="inner">
-          <div class="box-view">
+          <div v-if="username" class="box-view">
             <process-view :process="activatedProcess"></process-view>
           </div>
           <div class="box-command">
@@ -478,6 +478,9 @@
   main .inner .box-view, main .inner .box-command{
     height: 50%;
     width: 100%;
+  }
+  .wrapper main.full-width .box-command{
+    height: 100%;
   }
 
   .btn-login {
