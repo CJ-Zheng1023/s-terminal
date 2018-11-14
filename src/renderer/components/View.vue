@@ -8,7 +8,7 @@
         <div class="panel">{{process.description}}</div>
         <div class="panel">
           <div class="tools">
-            <i class="fa fa-play-circle-o btn-run" v-tooltip.top-center="'运行程序'"></i>
+            <i class="fa fa-play-circle-o btn-run" v-tooltip.top-center="'运行程序'" @click="runProcess"></i>
           </div>
           <pre v-for="(item, index) in codeList">{{index + 1}}   {{item}}</pre>
         </div>
@@ -27,6 +27,11 @@
         } else {
           return []
         }
+      }
+    },
+    methods: {
+      runProcess () {
+        this.$emit('run')
       }
     },
     mounted () {

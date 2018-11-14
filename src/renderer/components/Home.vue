@@ -53,7 +53,7 @@
       <main :class="[username ? '' : 'full-width']">
         <div class="inner">
           <div v-if="username" class="box-view">
-            <process-view :process="activatedProcess"></process-view>
+            <process-view :process="activatedProcess" @run="runProcess"></process-view>
           </div>
           <div class="box-command">
             <command></command>
@@ -132,6 +132,8 @@
       ])
     },
     methods: {
+      runProcess () {
+      },
       selectItem (item) {
         this.activeProcess(item.id)
         this.activatedProcess = item
