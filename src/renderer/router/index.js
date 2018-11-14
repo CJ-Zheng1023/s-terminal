@@ -8,20 +8,7 @@ let router = new Router({
     {
       path: '/',
       name: 'Home',
-      redirect: '/command',
-      component: require('@/components/Home').default,
-      children: [
-        {
-          path: 'command',
-          name: 'command',
-          component: require('@/components/Command').default
-        },
-        {
-          path: 'setting',
-          name: 'setting',
-          component: require('@/components/Setting').default
-        }
-      ]
+      component: require('@/components/Home').default
     },
     {
       path: '*',

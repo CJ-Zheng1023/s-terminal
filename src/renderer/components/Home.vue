@@ -6,8 +6,7 @@
         <span>批处理系统</span>
       </div>
       <div class="actions">
-        <router-link to="/setting" tag="i" class="fa fa-cog" v-tooltip.top-center="'设置'"></router-link>
-        <router-link to="/command" tag="i" class="fa fa-cog" v-tooltip.top-center="'返回'"></router-link>
+        <i class="fa fa-cog" v-tooltip.top-center="'设置'"></i>
         <span class="separation"></span>
         <el-dropdown v-if="username" trigger="click" @command="dropdownCommand">
                     <span class="el-dropdown-link">
@@ -38,11 +37,10 @@
           <div class="inner-body">
             <div class="process-list" ref="processListScroll">
               <ul>
-                <li tag="li" :class="{active: item.active}" v-for="item in processList" :key="item.id">
+                <li @click="selectItem(item)" :class="{active: item.active}" v-for="item in processList" :key="item.id">
                   <h3>{{item.title}}</h3>
                   <p>{{item.description}}</p>
                   <div class="actions">
-                    <i class="fa fa-play-circle-o btn-run" v-tooltip.top-center="'运行程序'" @click.stop="runProcess(item.id)"></i>
                     <i class="fa fa-edit btn-edit" v-tooltip.top-center="'修改程序'" @click.stop="openSaveDialog('修改批处理',item)"></i>
                     <i class="fa fa-close btn-delete" v-tooltip.top-center="'删除程序'" @click.stop="deleteItem(item)"></i>
                   </div>
@@ -54,9 +52,12 @@
       </aside>
       <main :class="[username ? '' : 'full-width']">
         <div class="inner">
-          <keep-alive>
-            <router-view></router-view>
-          </keep-alive>
+          <div class="box-view">
+            <process-view :process="activatedProcess"></process-view>
+          </div>
+          <div class="box-command">
+            <command></command>
+          </div>
         </div>
       </main>
     </div>
@@ -85,6 +86,8 @@
   import { mapState, mapActions } from 'vuex'
   import Utils from '@/common/scripts/utils'
   import Login from '@/components/Login'
+  import Command from '@/components/Command'
+  import ProcessView from '@/components/View'
 
   export default {
     data () {
@@ -103,6 +106,7 @@
           description: '',
           code: ''
         },
+        activatedProcess: {},
         processRules: {
           title: [
             {required: true, message: '请输入批处理标题', trigger: 'blur'}
@@ -117,7 +121,9 @@
       }
     },
     components: {
-      Login
+      Login,
+      Command,
+      ProcessView
     },
     computed: {
       ...mapState('Process', [
@@ -126,8 +132,9 @@
       ])
     },
     methods: {
-      runProcess (id) {
-        this.activeProcess(id)
+      selectItem (item) {
+        this.activeProcess(item.id)
+        this.activatedProcess = item
       },
       deleteItem (item) {
         this.$confirm(`此操作将永久删除批处理'${item.title}',是否继续?`, '提示', {
@@ -171,6 +178,7 @@
       closeSaveDialog () {
         this.showSaveDialog = false
         this.$refs['processForm'].resetFields()
+        this.process.id = ''
       },
       saveProcessForm () {
         this.$refs['processForm'].validate((valid) => {
@@ -216,6 +224,8 @@
       },
       showProcessList () {
         this.queryProcessList({start: 0, size: 10, ifAppend: false}).then(() => {
+          // 默认选中第一条
+          this.selectItem(this.processList[0])
           if (this.processScroll) {
             return false
           }
@@ -395,6 +405,7 @@
     word-break: break-all;
     word-wrap: break-word;
     line-height: 20px;
+    cursor: pointer;
   }
 
   .process-list li .actions {
@@ -412,10 +423,6 @@
     transform: scale(1.2);
   }
 
-  .process-list li .actions .btn-run {
-    color: #67C23A;
-  }
-
   .process-list li .actions .btn-edit {
     color: #E6A23C;
   }
@@ -428,7 +435,9 @@
     background-color: #404349;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
   }
-
+  .process-list li:hover{
+    background-color: #404349;
+  }
   .process-list li.active:before {
     position: absolute;
     left: 0;
@@ -456,7 +465,7 @@
   .wrapper main {
     height: 100%;
     margin-left: 300px;
-    overflow: auto;
+    overflow: hidden;
   }
   .wrapper main.full-width {
     margin-left: 0;
@@ -464,7 +473,10 @@
 
   main .inner {
     height: 100%;
-    flex-basis: auto;
+    width: 100%;
+  }
+  main .inner .box-view, main .inner .box-command{
+    height: 50%;
     width: 100%;
   }
 
