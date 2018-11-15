@@ -24,7 +24,9 @@
         // -1表示光标在结尾
         cursorIndex: -1,
         // -1表示未选中历史命令
-        historyIndex: -1
+        historyIndex: -1,
+        db: '',
+        exp: ''
       }
     },
     mounted () {
