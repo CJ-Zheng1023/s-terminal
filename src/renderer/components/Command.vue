@@ -85,7 +85,7 @@
   }
 
   .line {
-    line-height: 20px;
+    line-height: 23px;
     word-wrap: break-word;
     word-break: break-all;
   }

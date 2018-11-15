@@ -1,26 +1,16 @@
-import Utils from '@/common/scripts/utils'
+import Task from '@/common/scripts/task'
 /**
  * 回车键命令
  * @param vm vue实例
  */
 let cmdEnter = (vm) => {
   let input = vm.input
-  vm.contents.push({
-    id: Utils.idGenerator(),
-    type: 'cmd',
-    words: vm.input
-  })
-  vm.input = ''
-  vm.historyIndex = -1
-  vm.cursorIndex = -1
   if (input) {
-    // todo parser and do command
-    vm.contents.push({
-      id: Utils.idGenerator(),
-      type: 'result',
-      words: 'it is result'
-    })
-    vm.historyInput.push(input)
+    vm.input = ''
+    vm.historyIndex = -1
+    vm.cursorIndex = -1
+    let task = new Task(input, vm)
+    task.run()
   }
 }
 /**
