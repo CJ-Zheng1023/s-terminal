@@ -68,7 +68,7 @@
     margin: 0;
   }
   .box-body{
-    padding: 0 10%;
+    padding: 10px 10%;
   }
   .panel{
     padding: 15px 20px;
@@ -77,6 +77,8 @@
     margin: 20px 0;
     border-radius: 4px;
     position: relative;
+    word-wrap: break-word;
+    word-break: break-all;
   }
   .panel .tools{
     text-align: right;
