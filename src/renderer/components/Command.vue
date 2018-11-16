@@ -4,7 +4,7 @@
     <div class="box-body" ref="scroller">
       <div class="command-wrapper" tabindex="-1" @click="activePanel" @keydown="subscribeToKey">
         <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result']" class="line" v-for="item in contents"
-             :key="item.id">{{item.words}}
+             :key="item.id" v-html="item.words">
         </div>
         <div class="line line-command" v-html="inputHtml"></div>
       </div>

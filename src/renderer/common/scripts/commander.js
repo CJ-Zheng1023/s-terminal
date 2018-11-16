@@ -5,13 +5,11 @@ import Task from '@/common/scripts/task'
  */
 let cmdEnter = (vm) => {
   let input = vm.input
-  if (input) {
-    vm.input = ''
-    vm.historyIndex = -1
-    vm.cursorIndex = -1
-    let task = new Task(input, vm)
-    task.run()
-  }
+  vm.input = ''
+  vm.historyIndex = -1
+  vm.cursorIndex = -1
+  let task = new Task(input, vm)
+  task.run()
 }
 /**
  * backspace键命令
