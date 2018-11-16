@@ -135,7 +135,7 @@ export default {
   },
   executeProcess (vm) {
     let code = vm.code
-    let inputList = code.split('\n')
+    let inputList = code.split(/\n+/)
     vm.input = ''
     vm.historyIndex = -1
     vm.cursorIndex = -1

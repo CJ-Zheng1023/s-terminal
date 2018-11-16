@@ -15,6 +15,7 @@ class Task {
   run () {
     if (!this.input) {
       addContent.call(this, 'cmd', '&nbsp;')
+      done.call(this)
       return
     }
     let {cmd, cmdObj, params} = parse(this.input)
@@ -22,6 +23,7 @@ class Task {
     addHistory.call(this)
     if (!cmdObj) {
       addContent.call(this, 'result', `${cmd}是未识别的命令`)
+      done.call(this)
       return
     }
     this.cmd = cmd
@@ -42,7 +44,11 @@ class Task {
    * 执行下一个任务
    */
   executeNext () {
-    this.next && this.next.run()
+    if (this.next) {
+      this.next.run()
+    } else {
+      done.call(this)
+    }
   }
 }
 
@@ -74,10 +80,12 @@ let switchDBHandler = function () {
   let db = arguments[0]
   if (!db) {
     addContent.call(this, 'result', `${this.cmdObj.example(this.cmd)}`)
+    done.call(this)
     return
   }
   if (!_dbArray.includes(db)) {
     addContent.call(this, 'result', `数据库${db}不存在`)
+    done.call(this)
     return
   }
   this.vm.db = db
@@ -113,11 +121,13 @@ let helpHandler = function () {
 let searchHandler = function () {
   if (!this.vm.db) {
     addContent.call(this, 'result', `请选择数据库`)
+    done.call(this)
     return
   }
   let exp = arguments[0]
   if (!exp) {
     addContent.call(this, 'result', `${this.cmdObj.example(this.cmd)}`)
+    done.call(this)
     return
   }
   this.vm.exp = exp
@@ -150,6 +160,9 @@ let addHistory = function () {
   process.nextTick(() => {
     this.vm.scroller.scrollTo(0, this.vm.scroller.maxScrollY)
   })
+}
+let done = function () {
+  this.vm.$emit('stop')
 }
 /**
  * 命令映射对象

@@ -56,7 +56,7 @@
             <process-view :process="activatedProcess" @run="runProcess"></process-view>
           </div>
           <div class="box-command">
-            <command></command>
+            <command :ifRun="ifRun" :code="activatedProcess.code || ''" @stop="stopProcess"></command>
           </div>
         </div>
       </main>
@@ -117,7 +117,8 @@
           code: [
             {required: true, message: '平输入批处理代码', trigger: 'blur'}
           ]
-        }
+        },
+        ifRun: false
       }
     },
     components: {
@@ -133,6 +134,10 @@
     },
     methods: {
       runProcess () {
+        this.ifRun = true
+      },
+      stopProcess () {
+        this.ifRun = false
       },
       selectItem (item) {
         this.activeProcess(item.id)
