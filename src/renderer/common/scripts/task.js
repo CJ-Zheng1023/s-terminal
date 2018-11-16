@@ -28,6 +28,22 @@ class Task {
     this.cmdObj = cmdObj
     cmdObj.handler.apply(this, params)
   }
+
+  /**
+   * 设置下一个任务
+   * @param task 任务
+   */
+  setNext (task) {
+    this.next = task
+    return this
+  }
+
+  /**
+   * 执行下一个任务
+   */
+  executeNext () {
+    this.next && this.next.run()
+  }
 }
 
 /**
@@ -49,6 +65,7 @@ let parse = (input) => {
 let clearHandler = function () {
   this.vm.contents = []
   addHistory.apply(this)
+  this.executeNext()
 }
 /**
  * 切换数据库操作
@@ -64,12 +81,14 @@ let switchDBHandler = function () {
     return
   }
   this.vm.db = db
+  this.executeNext()
 }
 /**
  * 显示当前数据库操作
  */
 let dbHandler = function () {
   addContent.call(this, 'result', `当前数据库:${this.vm.db}`)
+  this.executeNext()
 }
 /**
  * 帮助操作
@@ -86,6 +105,7 @@ let helpHandler = function () {
   })
   html += `</tbody></table>`
   addContent.call(this, 'result', `${html}`)
+  this.executeNext()
 }
 /**
  * 检索操作
@@ -104,6 +124,7 @@ let searchHandler = function () {
   addContent.call(this, 'result', `执行检索式:${exp}`)
   axios.post('/search').then(response => {
     addContent.call(this, 'result', `检索到${response.data.total}个专利`)
+    this.executeNext()
   })
 }
 /**
@@ -154,7 +175,7 @@ const _cmdMap = {
     handler: dbHandler
   },
   'search': {
-    desc: '执行检索',
+    desc: '执行检索。',
     example (cmd) {
       return `使用方法：${cmd} &lt;手机/ti&gt;`
     },

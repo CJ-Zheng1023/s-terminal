@@ -1,4 +1,5 @@
 import Task from '@/common/scripts/task'
+import Executor from '@/common/scripts/executor'
 /**
  * 回车键命令
  * @param vm vue实例
@@ -8,8 +9,9 @@ let cmdEnter = (vm) => {
   vm.input = ''
   vm.historyIndex = -1
   vm.cursorIndex = -1
-  let task = new Task(input, vm)
-  task.run()
+  let executor = new Executor()
+  executor.addTask(new Task(input, vm))
+  executor.execute()
 }
 /**
  * backspace键命令
@@ -130,5 +132,17 @@ export default {
     } else {
       cmd(vm)
     }
+  },
+  executeProcess (vm) {
+    let code = vm.code
+    let inputList = code.split('\n')
+    vm.input = ''
+    vm.historyIndex = -1
+    vm.cursorIndex = -1
+    let executor = new Executor()
+    inputList.forEach(input => {
+      executor.addTask(new Task(input, vm))
+    })
+    executor.execute()
   }
 }

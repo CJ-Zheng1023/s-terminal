@@ -16,6 +16,14 @@
   import Commander from '@/common/scripts/commander'
 
   export default {
+    props: ['code', 'ifRun'],
+    watch: {
+      ifRun (newValue, oldValue) {
+        if (newValue) {
+          Commander.executeProcess(this)
+        }
+      }
+    },
     data () {
       return {
         input: '',
