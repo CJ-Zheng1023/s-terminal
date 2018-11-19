@@ -124,7 +124,11 @@ let searchHandler = function () {
     done.call(this)
     return
   }
-  let exp = arguments[0]
+  let exp = ''
+  Array.from(arguments).forEach(item => {
+    exp = exp + ' ' + item
+  })
+  exp = exp.substring(0)
   if (!exp) {
     addContent.call(this, 'result', `${this.cmdObj.example(this.cmd)}`)
     done.call(this)
@@ -133,7 +137,9 @@ let searchHandler = function () {
   this.vm.exp = exp
   addContent.call(this, 'result', `执行检索式:${exp}`)
   axios.post('/search').then(response => {
-    addContent.call(this, 'result', `检索到${response.data.total}个专利`)
+    let total = Number(response.data.total)
+    addContent.call(this, 'result', `检索到${total}个专利`)
+    addExpList.call(this, {total, exp, db: this.vm.db})
     this.executeNext()
   })
 }
@@ -208,6 +214,16 @@ let addHistory = function () {
     this.vm.scroller.scrollTo(0, this.vm.scroller.maxScrollY)
   })
 }
+/**
+ * 记录检索式
+ * @param exp 检索式
+ */
+let addExpList = function (searchHistory) {
+  this.vm.searchHistoryList.push(searchHistory)
+}
+/**
+ * 修改父组件正在运行标识位
+ */
 let done = function () {
   this.vm.$emit('stop')
 }

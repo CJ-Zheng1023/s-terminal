@@ -10,17 +10,20 @@
         <div class="line line-command" v-html="inputHtml"></div>
       </div>
     </div>
+    <search-history :searchHistoryList="searchHistoryList"></search-history>
   </div>
 </template>
 <script>
   import BScroll from 'better-scroll'
   import Content from '@/components/Content'
+  import SearchHistory from '@/components/SearchHistory'
   import Commander from '@/common/scripts/commander'
 
   export default {
     props: ['code', 'ifRun'],
     components: {
-      LineContent: Content
+      LineContent: Content,
+      SearchHistory
     },
     watch: {
       ifRun (newValue, oldValue) {
@@ -39,7 +42,9 @@
         // -1表示未选中历史命令
         historyIndex: -1,
         db: '',
-        exp: ''
+        exp: '',
+        // 历史检索式集合
+        searchHistoryList: []
       }
     },
     mounted () {
