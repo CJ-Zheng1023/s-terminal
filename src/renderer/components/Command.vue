@@ -3,8 +3,9 @@
     <div class="box-header">终端</div>
     <div class="box-body" ref="scroller">
       <div class="command-wrapper" tabindex="-1" @click="activePanel" @keydown="subscribeToKey">
-        <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result']" class="line" v-for="item in contents"
-             :key="item.id" v-html="item.words">
+        <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result', 'line']" v-for="item in contents"
+             :key="item.id">
+          <line-content :item="item"></line-content>
         </div>
         <div class="line line-command" v-html="inputHtml"></div>
       </div>
@@ -13,10 +14,14 @@
 </template>
 <script>
   import BScroll from 'better-scroll'
+  import Content from '@/components/Content'
   import Commander from '@/common/scripts/commander'
 
   export default {
     props: ['code', 'ifRun'],
+    components: {
+      LineContent: Content
+    },
     watch: {
       ifRun (newValue, oldValue) {
         if (newValue) {

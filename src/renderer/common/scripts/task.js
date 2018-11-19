@@ -146,22 +146,34 @@ let statisticHandler = function () {
     done.call(this)
     return
   }
-  if (arguments.length) {
+  if (!arguments.length) {
     addContent.call(this, 'result', `缺少统计字段参数`)
     done.call(this)
     return
   }
+  axios.get('/statistic').then(response => {
+    let result = response.data.result
+    let html = '<h4>统计结果</h4><table>'
+    Object.keys(result).forEach(key => {
+      html = `${html}<tr><td>${key}</td><td>${result[key]}</td></tr>`
+    })
+    html += '</table>'
+    addContent.call(this, 'result', `${html}`, response.data.statisticData)
+    this.executeNext()
+  })
 }
 /**
  * 记录输入命令和结果
  * @param type 内容类型 cmd：命令类型    result：结果类型
  * @param words 记录的内容
+ * @param statisticData   统计数据
  */
-let addContent = function (type, words) {
+let addContent = function (type, words, statisticData) {
   this.vm.contents.push({
     id: Utils.idGenerator(),
     type,
-    words
+    words,
+    statisticData
   })
   process.nextTick(() => {
     this.vm.scroller.scrollTo(0, this.vm.scroller.maxScrollY)
