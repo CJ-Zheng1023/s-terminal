@@ -8,7 +8,7 @@
         <div class="panel">{{process.description}}</div>
         <div class="panel">
           <div class="tools">
-            <i class="fa fa-download btn-download" v-tooltip.top-center="'下载代码'"></i>
+            <i class="fa fa-download btn-download" v-tooltip.top-center="'下载代码'" @click="download"></i>
             <i class="fa fa-play-circle-o btn-run" v-tooltip.top-center="'运行程序'" @click="runProcess"></i>
           </div>
           <pre v-for="(item, index) in codeList">{{index + 1}}   {{item}}</pre>
@@ -19,6 +19,7 @@
 </template>
 <script>
   import BScroll from 'better-scroll'
+  import {ipcRenderer} from 'electron'
   export default {
     props: ['process'],
     computed: {
@@ -33,6 +34,12 @@
     methods: {
       runProcess () {
         this.$emit('run')
+      },
+      download () {
+        ipcRenderer.send('download', {
+          code: this.process.code,
+          name: this.process.title
+        })
       }
     },
     mounted () {

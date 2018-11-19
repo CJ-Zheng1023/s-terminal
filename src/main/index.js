@@ -1,6 +1,7 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+const fs = require('fs')
 
 /**
  * Set `__static` path to static files in production
@@ -46,4 +47,26 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
   }
+})
+ipcMain.on('download', (event, {code, name}) => {
+  console.log(name)
+  dialog.showSaveDialog({
+    title: '下载代码',
+    filters: [
+      {name: name, extensions: ['txt']}
+    ]
+  }, (fileName) => {
+    if (fileName) {
+      fs.writeFile(fileName, code, (error) => {
+        if (error) {
+          console.error(error)
+        }
+        dialog.showMessageBox({
+          type: 'info',
+          message: '下载成功！',
+          buttons: ['确定']
+        })
+      })
+    }
+  })
 })
