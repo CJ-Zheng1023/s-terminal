@@ -163,6 +163,26 @@ let statisticHandler = function () {
   })
 }
 /**
+ * 导出结果集
+ */
+let exportHandler = function () {
+  if (!this.vm.exp) {
+    addContent.call(this, 'result', `没有可导出结果集`)
+    done.call(this)
+    return
+  }
+  axios.get('/search/list').then(response => {
+    let list = response.data.patentList
+    let exportData = []
+    list.forEach(item => {
+      let arr = [item.an, item.title]
+      exportData.push(arr)
+    })
+    Utils.exportExcel(exportData)
+    this.executeNext()
+  })
+}
+/**
  * 记录输入命令和结果
  * @param type 内容类型 cmd：命令类型    result：结果类型
  * @param words 记录的内容
@@ -232,6 +252,10 @@ const _cmdMap = {
       return `使用方法：${cmd} &lt;统计字段&gt;`
     },
     handler: statisticHandler
+  },
+  'export': {
+    desc: '导出结果集',
+    handler: exportHandler
   }
 }
 /**
