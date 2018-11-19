@@ -22,7 +22,7 @@ class Task {
     addContent.call(this, 'cmd', this.input)
     addHistory.call(this)
     if (!cmdObj) {
-      addContent.call(this, 'result', `${cmd}是未识别的命令`)
+      addContent.call(this, 'result', `${cmd}是未识别的命令,输入help查看使用说明`)
       done.call(this)
       return
     }
@@ -138,6 +138,21 @@ let searchHandler = function () {
   })
 }
 /**
+ * 统计操作
+ */
+let statisticHandler = function () {
+  if (!this.vm.exp) {
+    addContent.call(this, 'result', `没有可统计结果集`)
+    done.call(this)
+    return
+  }
+  if (arguments.length) {
+    addContent.call(this, 'result', `缺少统计字段参数`)
+    done.call(this)
+    return
+  }
+}
+/**
  * 记录输入命令和结果
  * @param type 内容类型 cmd：命令类型    result：结果类型
  * @param words 记录的内容
@@ -189,10 +204,20 @@ const _cmdMap = {
   },
   'search': {
     desc: '执行检索。',
+    /**
+     * 使用说明
+     * @param cmd   命令
+     * @returns {string} 使用说明字符串
+     */
     example (cmd) {
       return `使用方法：${cmd} &lt;手机/ti&gt;`
     },
     handler: searchHandler
+  },
+  'st': {
+    desc: '对结果集进行统计',
+    example (cmd) {},
+    handler: statisticHandler
   }
 }
 /**

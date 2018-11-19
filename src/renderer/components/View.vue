@@ -8,6 +8,7 @@
         <div class="panel">{{process.description}}</div>
         <div class="panel">
           <div class="tools">
+            <i class="fa fa-download btn-download" v-tooltip.top-center="'下载代码'"></i>
             <i class="fa fa-play-circle-o btn-run" v-tooltip.top-center="'运行程序'" @click="runProcess"></i>
           </div>
           <pre v-for="(item, index) in codeList">{{index + 1}}   {{item}}</pre>
@@ -92,5 +93,8 @@
   }
   .btn-run {
     color: #67C23A;
+  }
+  .btn-download{
+    color: #409EFF;
   }
 </style>
