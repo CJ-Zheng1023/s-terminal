@@ -6,7 +6,7 @@
         <span>批处理系统</span>
       </div>
       <div class="actions">
-        <i class="fa fa-cog" v-tooltip.top-center="'设置'"></i>
+        <i class="fa fa-cog" v-tooltip.top-center="'设置'" @click="showSettingDialog = true"></i>
         <span class="separation"></span>
         <el-dropdown v-if="username" trigger="click" @command="dropdownCommand">
                     <span class="el-dropdown-link">
@@ -79,6 +79,35 @@
         <el-button :loading="saveBtnLoading" type="warning" class="btn-login" size="small" @click="saveProcessForm">保 存</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="设置" :visible.sync="showSettingDialog" @close="showSettingDialog = false">
+      <div class="dialog-setting">
+        <h3>快捷键</h3>
+        <el-form :label-width="formLabelWidth">
+          <el-form-item label="快捷键1">
+            <el-input autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="快捷键2">
+            <el-input autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="快捷键3">
+            <el-input autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <h3>其他</h3>
+        <el-form :label-width="formLabelWidth">
+          <el-form-item label="下载目录">
+            <el-input autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button size="small" plain>检查更新</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="showSettingDialog = false" size="small">关 闭</el-button>
+        <el-button @click="showSettingDialog = false" type="warning" class="btn-login" size="small">保 存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -88,6 +117,7 @@
   import Login from '@/components/Login'
   import Command from '@/components/Command'
   import ProcessView from '@/components/View'
+  import ElFormItem from '../../../node_modules/element-ui/packages/form/src/form-item.vue'
 
   export default {
     data () {
@@ -98,6 +128,7 @@
         username: Utils.getUserName(),
         showLoginDialog: false,
         showSaveDialog: false,
+        showSettingDialog: false,
         formLabelWidth: '100px',
         saveBtnLoading: false,
         process: {
@@ -122,6 +153,7 @@
       }
     },
     components: {
+      ElFormItem,
       Login,
       Command,
       ProcessView
@@ -501,5 +533,14 @@
   }
   .el-textarea textarea{
     height: 100px;
+  }
+  .dialog-setting{
+    padding: 0 15px;
+  }
+  .dialog-setting .el-form{
+    padding: 10px 30px;
+  }
+  .dialog-setting .el-input{
+    width: 300px;
   }
 </style>

@@ -8,7 +8,7 @@
     <div class="content" ref="scroller">
       <div class="inner">
         <ul>
-          <li v-for="item in searchHistoryList">
+          <li v-for="(item, index) in searchHistoryList">
             <el-badge :value="item.total" :max=300>
               <el-tag size="small">{{item.db}}</el-tag>
             </el-badge>
@@ -50,7 +50,7 @@
 <style>
   .bottom-bar{
     position: fixed;
-    bottom: -200px;
+    bottom: -300px;
     right: 30px;
     width: 350px;
     z-index: 1;
@@ -81,7 +81,7 @@
   .bottom-bar .content{
     background-color: #fff;
     padding: 8px 25px;
-    height: 200px;
+    height: 300px;
     position: relative;
     overflow: hidden;
     box-sizing: border-box;
