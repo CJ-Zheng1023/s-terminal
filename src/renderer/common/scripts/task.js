@@ -227,8 +227,10 @@ const _cmdMap = {
     handler: searchHandler
   },
   'st': {
-    desc: '对结果集进行统计',
-    example (cmd) {},
+    desc: '对结果集进行统计。',
+    example (cmd) {
+      return `使用方法：${cmd} &lt;统计字段&gt;`
+    },
     handler: statisticHandler
   }
 }
