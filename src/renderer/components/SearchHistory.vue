@@ -1,6 +1,6 @@
 <template>
-  <div :class="[{active: isActive}, 'bottom-bar']" @click="isActive = !isActive">
-    <div class="title">
+  <div :class="[{active: isActive}, 'bottom-bar']">
+    <div class="title" @click="isActive = !isActive">
       <span>检索轨迹</span>
       <i v-show="!isActive" class="fa fa-angle-up"></i>
       <i v-show="isActive" class="fa fa-angle-down"></i>
@@ -13,7 +13,7 @@
               <el-tag size="small">{{item.db}}</el-tag>
             </el-badge>
             <span v-tooltip.top-center="item.exp">{{item.exp}}</span>
-            <i class="fa fa-clipboard"></i>
+            <i class="fa fa-clipboard" @click="copy(item.exp)"></i>
           </li>
         </ul>
       </div>
@@ -22,11 +22,21 @@
 </template>
 <script>
   import BScroll from 'better-scroll'
+  const {clipboard} = require('electron')
   export default {
     props: ['searchHistoryList'],
     data () {
       return {
         isActive: false
+      }
+    },
+    methods: {
+      copy (exp) {
+        clipboard.writeText(exp)
+        this.$message({
+          message: '已复制到剪贴板',
+          type: 'info'
+        })
       }
     },
     mounted () {
