@@ -96,7 +96,7 @@
         <h3>其他</h3>
         <el-form :label-width="formLabelWidth">
           <el-form-item label="下载目录">
-            <el-input autocomplete="off"></el-input>
+            <el-input :value="downloadPath" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" plain>检查更新</el-button>
@@ -118,6 +118,8 @@
   import Command from '@/components/Command'
   import ProcessView from '@/components/View'
   import ElFormItem from '../../../node_modules/element-ui/packages/form/src/form-item.vue'
+  const path = require('path')
+  const os = require('os')
 
   export default {
     data () {
@@ -149,7 +151,8 @@
             {required: true, message: '平输入批处理代码', trigger: 'blur'}
           ]
         },
-        ifRun: false
+        ifRun: false,
+        downloadPath: path.join(os.homedir())
       }
     },
     components: {

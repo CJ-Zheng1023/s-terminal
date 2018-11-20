@@ -27,6 +27,7 @@ function createWindow () {
     // frame: false
     // titleBarStyle: 'hidden'
   })
+  // mainWindow.webContents.openDevTools()
 
   mainWindow.loadURL(winURL)
 
