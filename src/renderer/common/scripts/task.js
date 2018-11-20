@@ -184,6 +184,7 @@ let exportHandler = function () {
       let arr = [item.an, item.title]
       exportData.push(arr)
     })
+    addContent.call(this, 'result', `结果集导出完毕`)
     Utils.exportExcel(exportData)
     this.executeNext()
   })

@@ -44,7 +44,8 @@
         db: '',
         exp: '',
         // 历史检索式集合
-        searchHistoryList: []
+        searchHistoryList: [],
+        isLoading: false
       }
     },
     mounted () {
@@ -66,6 +67,10 @@
     computed: {
       inputHtml () {
         let html = ''
+        if (this.isLoading) {
+          html = `<span><i class="fa fa-spinner fa-pulse"></i>请稍后...</span>`
+          return html
+        }
         let cursorIndex = this.cursorIndex
         let input = this.input
         if (cursorIndex === -1) {
