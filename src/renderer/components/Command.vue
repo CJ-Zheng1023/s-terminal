@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <div class="box-header">终端</div>
+    <div class="box-header">终端&nbsp;&nbsp;(输入help，查看帮助)</div>
     <div class="box-body" ref="scroller">
       <div class="command-wrapper" tabindex="-1" @click="activePanel" @keydown="subscribeToKey">
         <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result', 'line']" v-for="item in contents"

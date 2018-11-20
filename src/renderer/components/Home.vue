@@ -538,7 +538,7 @@
     padding: 0 15px;
   }
   .dialog-setting .el-form{
-    padding: 10px 30px;
+    padding: 5px 30px;
   }
   .dialog-setting .el-input{
     width: 300px;
