@@ -60,7 +60,7 @@
     bottom: 0;
   }
   .bottom-bar .title{
-    padding: 15px 20px;
+    padding: 10px 20px;
     color: #fff;
     background-color: #11b683;
     text-align: center;
