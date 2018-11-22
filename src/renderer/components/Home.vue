@@ -117,7 +117,6 @@
   import Login from '@/components/Login'
   import Command from '@/components/Command'
   import ProcessView from '@/components/View'
-  import ElFormItem from '../../../node_modules/element-ui/packages/form/src/form-item.vue'
   const path = require('path')
   const os = require('os')
 
@@ -156,7 +155,6 @@
       }
     },
     components: {
-      ElFormItem,
       Login,
       Command,
       ProcessView

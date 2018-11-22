@@ -136,10 +136,12 @@ let searchHandler = function () {
   }
   this.vm.exp = exp
   addContent.call(this, 'result', `执行检索式:${exp}`)
+  setLoading.call(this, true)
   axios.post('/search').then(response => {
     let total = Number(response.data.total)
     addContent.call(this, 'result', `检索到${total}个专利`)
     addExpList.call(this, {total, exp, db: this.vm.db})
+    setLoading.call(this, false)
     this.executeNext()
   })
 }
@@ -157,6 +159,7 @@ let statisticHandler = function () {
     done.call(this)
     return
   }
+  setLoading.call(this, true)
   axios.get('/statistic').then(response => {
     let result = response.data.result
     let html = '<h4>统计结果</h4><table>'
@@ -165,6 +168,7 @@ let statisticHandler = function () {
     })
     html += '</table>'
     addContent.call(this, 'result', `${html}`, response.data.statisticData)
+    setLoading.call(this, false)
     this.executeNext()
   })
 }
@@ -177,6 +181,7 @@ let exportHandler = function () {
     done.call(this)
     return
   }
+  setLoading.call(this, true)
   axios.get('/search/list').then(response => {
     let list = response.data.patentList
     let exportData = []
@@ -185,6 +190,7 @@ let exportHandler = function () {
       exportData.push(arr)
     })
     addContent.call(this, 'result', `结果集导出完毕`)
+    setLoading.call(this, false)
     Utils.exportExcel(exportData)
     this.executeNext()
   })
@@ -217,7 +223,7 @@ let addHistory = function () {
 }
 /**
  * 记录检索式
- * @param exp 检索式
+ * @param searchHistory 检索历史对象
  */
 let addExpList = function (searchHistory) {
   this.vm.searchHistoryList.push(searchHistory)
@@ -227,6 +233,9 @@ let addExpList = function (searchHistory) {
  */
 let done = function () {
   this.vm.$emit('stop')
+}
+let setLoading = function (flag) {
+  this.vm.isLoading = flag
 }
 /**
  * 命令映射对象
