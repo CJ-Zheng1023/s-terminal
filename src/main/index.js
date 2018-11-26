@@ -23,8 +23,8 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     minHeight: 563,
     useContentSize: true,
-    minWidth: 1000
-    // frame: false
+    minWidth: 1000,
+    frame: false
     // titleBarStyle: 'hidden'
   })
   // mainWindow.webContents.openDevTools()
@@ -70,4 +70,18 @@ ipcMain.on('download', (event, {code, name}) => {
       })
     }
   })
+})
+ipcMain.on('min-window', () => {
+  mainWindow.minimize()
+})
+ipcMain.on('close-window', () => {
+  mainWindow.close()
+})
+ipcMain.on('max-window', (e) => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize()
+  } else {
+    mainWindow.maximize()
+  }
+  e.sender.send('change-window-max')
 })

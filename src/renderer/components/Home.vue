@@ -1,11 +1,11 @@
 <template>
   <div>
-    <header>
+    <header style="-webkit-app-region: drag;">
       <div class="logo">
         <i class="fa fa-2x fa-joomla"></i>
         <span>批处理系统</span>
       </div>
-      <div class="actions">
+      <div class="actions" style="-webkit-app-region: no-drag;">
         <i class="fa fa-cog" v-tooltip.top-center="'设置'" @click="showSettingDialog = true"></i>
         <span class="separation"></span>
         <el-dropdown v-if="username" trigger="click" @command="dropdownCommand">
@@ -19,42 +19,15 @@
           </el-dropdown-menu>
         </el-dropdown>
         <el-button size="mini" type="warning" class="btn-login" @click="showLoginDialog = true" v-else>未登录</el-button>
+        <span class="separation"></span>
+        <i class="fa fa-window-minimize" style="position: relative;top: -4px;" @click="minWindow"></i>
+        <i :class="['fa', isMaxWindow ? 'fa-window-restore' : 'fa-window-maximize']" @click="maxWindow"></i>
+        <i class="fa fa-window-close-o" @click="closeWindow"></i>
       </div>
     </header>
     <div class="wrapper">
-      <aside v-if="username">
+      <main class="full-width">
         <div class="inner">
-          <div class="inner-header">
-            <div class="input-item">
-              <el-input size="mini" placeholder="请输入批处理名称" prefix-icon="el-icon-search" v-model="searchInput">
-              </el-input>
-            </div>
-            <div class="title-item">
-              <span>批处理列表</span>
-              <i class="fa fa-plus-square-o" v-tooltip.top-center="'新建批处理'" @click="openSaveDialog('新建批处理')"></i>
-            </div>
-          </div>
-          <div class="inner-body">
-            <div class="process-list" ref="processListScroll">
-              <ul>
-                <li @click="selectItem(item)" :class="{active: item.active}" v-for="item in processList" :key="item.id">
-                  <h3>{{item.title}}</h3>
-                  <p>{{item.description}}</p>
-                  <div class="actions">
-                    <i class="fa fa-edit btn-edit" v-tooltip.top-center="'修改程序'" @click.stop="openSaveDialog('修改批处理',item)"></i>
-                    <i class="fa fa-close btn-delete" v-tooltip.top-center="'删除程序'" @click.stop="deleteItem(item)"></i>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </aside>
-      <main :class="[username ? '' : 'full-width']">
-        <div class="inner">
-          <div v-if="username" class="box-view">
-            <process-view :process="activatedProcess" @run="runProcess"></process-view>
-          </div>
           <div class="box-command">
             <command :ifRun="ifRun" :code="activatedProcess.code || ''" @stop="stopProcess"></command>
           </div>
@@ -62,23 +35,6 @@
       </main>
     </div>
     <login v-if="showLoginDialog" @close="showLoginDialog = false"></login>
-    <el-dialog :title="title" :visible.sync="showSaveDialog" @close="closeSaveDialog">
-      <el-form :model.sync="process" :rules="processRules" :label-width="formLabelWidth" ref="processForm">
-        <el-form-item label="批处理名称" prop="title">
-          <el-input v-model="process.title" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="批处理描述" prop="description">
-          <el-input type="textarea" rows="3" v-model="process.description"></el-input>
-        </el-form-item>
-        <el-form-item label="批处理代码" prop="code">
-          <el-input type="textarea" rows="6" v-model="process.code"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="closeSaveDialog" size="small">关 闭</el-button>
-        <el-button :loading="saveBtnLoading" type="warning" class="btn-login" size="small" @click="saveProcessForm">保 存</el-button>
-      </div>
-    </el-dialog>
     <el-dialog title="设置" :visible.sync="showSettingDialog" @close="showSettingDialog = false">
       <div class="dialog-setting">
         <h3>快捷键</h3>
@@ -116,7 +72,7 @@
   import Utils from '@/common/scripts/utils'
   import Login from '@/components/Login'
   import Command from '@/components/Command'
-  import ProcessView from '@/components/View'
+  import {ipcRenderer} from 'electron'
   const path = require('path')
   const os = require('os')
 
@@ -128,7 +84,6 @@
         processListLoading: false,
         username: Utils.getUserName(),
         showLoginDialog: false,
-        showSaveDialog: false,
         showSettingDialog: false,
         formLabelWidth: '100px',
         saveBtnLoading: false,
@@ -151,13 +106,13 @@
           ]
         },
         ifRun: false,
-        downloadPath: path.join(os.homedir())
+        downloadPath: path.join(os.homedir()),
+        isMaxWindow: false
       }
     },
     components: {
       Login,
-      Command,
-      ProcessView
+      Command
     },
     computed: {
       ...mapState('Process', [
@@ -166,6 +121,15 @@
       ])
     },
     methods: {
+      minWindow () {
+        ipcRenderer.send('min-window')
+      },
+      closeWindow () {
+        ipcRenderer.send('close-window')
+      },
+      maxWindow () {
+        ipcRenderer.send('max-window')
+      },
       runProcess () {
         this.ifRun = true
       },
@@ -316,9 +280,9 @@
       ])
     },
     mounted () {
-      if (this.username) {
-        this.showProcessList()
-      }
+      ipcRenderer.on('change-window-max', () => {
+        this.isMaxWindow = !this.isMaxWindow
+      })
     }
   }
 </script>
@@ -357,6 +321,7 @@
 
   header .actions i {
     cursor: pointer;
+    margin: 0 3px;
   }
 
   header .actions .separation {

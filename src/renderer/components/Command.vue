@@ -1,6 +1,5 @@
 <template>
   <div class="box">
-    <div class="box-header">终端&nbsp;&nbsp;(输入help，查看帮助)</div>
     <div class="box-body" ref="scroller">
       <div class="command-wrapper" tabindex="-1" @click="activePanel" @keydown="subscribeToKey">
         <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result', 'line']" v-for="item in contents"
@@ -10,20 +9,17 @@
         <div class="line line-command" v-html="inputHtml"></div>
       </div>
     </div>
-    <search-history :searchHistoryList="searchHistoryList"></search-history>
   </div>
 </template>
 <script>
   import BScroll from 'better-scroll'
   import Content from '@/components/Content'
-  import SearchHistory from '@/components/SearchHistory'
   import Commander from '@/common/scripts/commander'
 
   export default {
     props: ['code', 'ifRun'],
     components: {
-      LineContent: Content,
-      SearchHistory
+      LineContent: Content
     },
     watch: {
       ifRun (newValue, oldValue) {
@@ -43,8 +39,6 @@
         historyIndex: -1,
         db: '',
         exp: '',
-        // 历史检索式集合
-        searchHistoryList: [],
         isLoading: false
       }
     },
@@ -145,7 +139,6 @@
   }
   .box {
     height: 100%;
-    padding-top: 40px;
     box-sizing: border-box;
     position: relative;
   }
