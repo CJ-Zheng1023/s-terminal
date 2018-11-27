@@ -58,7 +58,6 @@ class Task {
  * @returns {cmd: 命令, cmdObj: 命令对应的操作对象, params: 命令传入的参数}
  */
 let parse = (input) => {
-  console.log(input)
   let [cmd, ...params] = input.split(/ +/)
   return {
     cmd,

@@ -2,11 +2,13 @@
   <div class="box">
     <div class="box-body" ref="scroller">
       <div class="command-wrapper" @click="activePanel">
-        <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result', 'line']" v-for="item in contents"
+        <div :class="['line', item.type === 'cmd' ? 'line-command' : 'line-result']" v-for="item in contents"
              :key="item.id">
           <line-content :item="item"></line-content>
         </div>
-        <div ref="inputArea" style="height: 23px;overflow: hidden;" contenteditable="plaintext-only" class="line line-command" @keyup="subscribeToKey"></div>
+        <div v-show="!isLoading" style="height: 23px;overflow: hidden;" class="line line-command">
+          <div ref="inputArea" style="user-modify: read-write-plaintext-only;" @keyup="subscribeToKey"></div>
+        </div>
         <div v-show="isLoading" class="line line-command">
           <span><i class="fa fa-spinner fa-pulse"></i>请稍后...</span>
         </div>
@@ -34,6 +36,13 @@
       ifRun (newValue, oldValue) {
         if (newValue) {
           Commander.executeProcess(this)
+        }
+      },
+      isLoading (newValue, oldValue) {
+        if (!newValue) {
+          process.nextTick(() => {
+            this.activePanel()
+          })
         }
       }
     },
@@ -88,7 +97,7 @@
     background-color: #2f3136;
   }
 
-  .command-wrapper .line:focus {
+  .command-wrapper .line div:focus {
     border: none;
     outline: none;
   }
