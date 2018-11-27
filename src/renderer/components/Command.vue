@@ -6,7 +6,7 @@
              :key="item.id">
           <line-content :item="item"></line-content>
         </div>
-        <div v-show="!isLoading" ref="inputArea" style="height: 23px;overflow: hidden;" contenteditable="plaintext-only" class="line line-command" @keyup="subscribeToKey" @keypress.13="setEmpty"></div>
+        <div ref="inputArea" style="height: 23px;overflow: hidden;" contenteditable="plaintext-only" class="line line-command" @keyup="subscribeToKey"></div>
         <div v-show="isLoading" class="line line-command">
           <span><i class="fa fa-spinner fa-pulse"></i>请稍后...</span>
         </div>
