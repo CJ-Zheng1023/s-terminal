@@ -58,6 +58,7 @@ class Task {
  * @returns {cmd: 命令, cmdObj: 命令对应的操作对象, params: 命令传入的参数}
  */
 let parse = (input) => {
+  console.log(input)
   let [cmd, ...params] = input.split(/ +/)
   return {
     cmd,
@@ -140,7 +141,7 @@ let searchHandler = function () {
   axios.post('/search').then(response => {
     let total = Number(response.data.total)
     addContent.call(this, 'result', `检索到${total}个专利`)
-    addExpList.call(this, {total, exp, db: this.vm.db})
+    // addExpList.call(this, {total, exp, db: this.vm.db})
     setLoading.call(this, false)
     this.executeNext()
   })
@@ -225,9 +226,9 @@ let addHistory = function () {
  * 记录检索式
  * @param searchHistory 检索历史对象
  */
-let addExpList = function (searchHistory) {
+/* let addExpList = function (searchHistory) {
   this.vm.searchHistoryList.push(searchHistory)
-}
+} */
 /**
  * 修改父组件正在运行标识位
  */

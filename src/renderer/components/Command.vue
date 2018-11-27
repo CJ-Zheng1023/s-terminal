@@ -1,12 +1,21 @@
 <template>
   <div class="box">
     <div class="box-body" ref="scroller">
-      <div class="command-wrapper" tabindex="-1" @click="activePanel" @keydown="subscribeToKey">
+      <div class="command-wrapper" @click="activePanel">
         <div :class="[item.type === 'cmd' ? 'line-command' : 'line-result', 'line']" v-for="item in contents"
              :key="item.id">
           <line-content :item="item"></line-content>
         </div>
-        <div class="line line-command" v-html="inputHtml"></div>
+        <div v-show="!isLoading" ref="inputArea" style="height: 23px;overflow: hidden;" contenteditable="plaintext-only" class="line line-command" @keyup="subscribeToKey" @keypress.13="setEmpty"></div>
+        <div v-show="isLoading" class="line line-command">
+          <span><i class="fa fa-spinner fa-pulse"></i>请稍后...</span>
+        </div>
+      </div>
+    </div>
+    <div class="box-footer">
+      <div class="info">
+        <span>DB:</span>
+        <span>{{db}}</span>
       </div>
     </div>
   </div>
@@ -30,11 +39,8 @@
     },
     data () {
       return {
-        input: '',
         historyInput: [],
         contents: [],
-        // -1表示光标在结尾
-        cursorIndex: -1,
         // -1表示未选中历史命令
         historyIndex: -1,
         db: '',
@@ -58,29 +64,13 @@
         })
       })
     },
-    computed: {
-      inputHtml () {
-        let html = ''
-        if (this.isLoading) {
-          html = `<span><i class="fa fa-spinner fa-pulse"></i>请稍后...</span>`
-          return html
-        }
-        let cursorIndex = this.cursorIndex
-        let input = this.input
-        if (cursorIndex === -1) {
-          html = input.replace(/ /g, '&nbsp;') + `<span class="cursor cursor-blank">&nbsp;</span>`
-        } else {
-          let left = input.slice(0, cursorIndex).replace(/ /g, '&nbsp;')
-          let cur = input.charAt(cursorIndex).replace(/ /g, '&nbsp;')
-          let right = input.slice(cursorIndex + 1).replace(/ /g, '&nbsp;')
-          html = `${left}<span class="cursor">${cur}</span>${right}`
-        }
-        return html
-      }
-    },
     methods: {
+      // 输入回车键后清空节点
+      setEmpty (e) {
+        this.activePanel()
+      },
       activePanel (e) {
-        e.target.focus()
+        this.$refs.inputArea.focus()
       },
       subscribeToKey (e) {
         Commander.init(e, this)
@@ -98,7 +88,7 @@
     background-color: #2f3136;
   }
 
-  .command-wrapper:focus {
+  .command-wrapper .line:focus {
     border: none;
     outline: none;
   }
@@ -141,8 +131,26 @@
     height: 100%;
     box-sizing: border-box;
     position: relative;
+    padding-bottom: 60px;
   }
-
+  .box-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #464646;
+    border-top: 1px solid #565656;
+    box-sizing: border-box;
+    color: #fff;
+    padding: 0 40px;
+    overflow: hidden;
+  }
+  .box-footer .info{
+    float: right;
+    line-height: 60px;
+    font-size: 18px;
+  }
   .box-header {
     top: 0;
     left: 0;

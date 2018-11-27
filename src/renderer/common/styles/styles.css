@@ -133,7 +133,7 @@
   box-sizing: border-box;
   border: 1px solid #9cdaba;
 }
-.command-wrapper:focus .cursor {
+.command-wrapper .line:focus .cursor {
   background-color: #9cdaba;
   animation: cursor-blink 1.2s infinite;
 }

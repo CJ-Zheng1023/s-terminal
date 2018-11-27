@@ -298,6 +298,8 @@
   header {
     height: 60px;
     background-color: #464646;
+    border-bottom: 1px solid #565656;
+    box-sizing: border-box;
     color: #fff;
     padding: 0 40px;
     overflow: hidden;
