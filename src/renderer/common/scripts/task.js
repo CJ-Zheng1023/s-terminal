@@ -14,15 +14,15 @@ class Task {
    */
   run () {
     if (!this.input) {
-      addContent.call(this, 'cmd', '&nbsp;')
+      addLog.call(this, 'cmd', '&nbsp;')
       done.call(this)
       return
     }
     let {cmd, cmdObj, params} = parse(this.input)
-    addContent.call(this, 'cmd', this.input)
+    addLog.call(this, 'cmd', this.input)
     addHistory.call(this)
     if (!cmdObj) {
-      addContent.call(this, 'result', `${cmd}是未识别的命令,输入help查看使用说明`)
+      addLog.call(this, 'info', `${cmd}是未识别的命令,输入help查看使用说明`)
       done.call(this)
       return
     }
@@ -69,7 +69,7 @@ let parse = (input) => {
  * 清空操作
  */
 let clearHandler = function () {
-  this.vm.contents = []
+  this.vm.clearLogs()
   addHistory.apply(this)
   this.executeNext()
 }
@@ -79,23 +79,23 @@ let clearHandler = function () {
 let switchDBHandler = function () {
   let db = arguments[0]
   if (!db) {
-    addContent.call(this, 'result', `${this.cmdObj.example(this.cmd)}`)
+    addLog.call(this, 'info', `${this.cmdObj.example(this.cmd)}`)
     done.call(this)
     return
   }
   if (!_dbArray.includes(db)) {
-    addContent.call(this, 'result', `数据库${db}不存在`)
+    addLog.call(this, 'info', `数据库${db}不存在`)
     done.call(this)
     return
   }
-  this.vm.db = db
+  this.vm.switchDataBase(db)
   this.executeNext()
 }
 /**
  * 显示当前数据库操作
  */
 let dbHandler = function () {
-  addContent.call(this, 'result', `当前数据库:${this.vm.db}`)
+  addLog.call(this, 'info', `当前数据库:${this.vm.db}`)
   this.executeNext()
 }
 /**
@@ -112,7 +112,7 @@ let helpHandler = function () {
     html += tr
   })
   html += `</tbody></table>`
-  addContent.call(this, 'result', `${html}`)
+  addLog.call(this, 'info', `${html}`)
   this.executeNext()
 }
 /**
@@ -120,7 +120,7 @@ let helpHandler = function () {
  */
 let searchHandler = function () {
   if (!this.vm.db) {
-    addContent.call(this, 'result', `请选择数据库`)
+    addLog.call(this, 'info', `请选择数据库`)
     done.call(this)
     return
   }
@@ -130,16 +130,16 @@ let searchHandler = function () {
   })
   exp = exp.substring(0)
   if (!exp) {
-    addContent.call(this, 'result', `${this.cmdObj.example(this.cmd)}`)
+    addLog.call(this, 'info', `${this.cmdObj.example(this.cmd)}`)
     done.call(this)
     return
   }
-  this.vm.exp = exp
-  addContent.call(this, 'result', `执行检索式:${exp}`)
+  this.vm.switchExp(exp)
+  addLog.call(this, 'info', `执行检索式:${exp}`)
   setLoading.call(this, true)
   axios.post('/search').then(response => {
     let total = Number(response.data.total)
-    addContent.call(this, 'result', `检索到${total}个专利`)
+    addLog.call(this, 'info', `检索到${total}个专利`)
     // addExpList.call(this, {total, exp, db: this.vm.db})
     setLoading.call(this, false)
     this.executeNext()
@@ -150,24 +150,18 @@ let searchHandler = function () {
  */
 let statisticHandler = function () {
   if (!this.vm.exp) {
-    addContent.call(this, 'result', `没有可统计结果集`)
+    addLog.call(this, 'info', `没有可统计结果集`)
     done.call(this)
     return
   }
   if (!arguments.length) {
-    addContent.call(this, 'result', `缺少统计字段参数`)
+    addLog.call(this, 'info', `缺少统计字段参数`)
     done.call(this)
     return
   }
   setLoading.call(this, true)
   axios.get('/statistic').then(response => {
-    let result = response.data.result
-    let html = '<h4>统计结果</h4><table>'
-    Object.keys(result).forEach(key => {
-      html = `${html}<tr><td>${key}</td><td>${result[key]}</td></tr>`
-    })
-    html += '</table>'
-    addContent.call(this, 'result', `${html}`, response.data.statisticData)
+    addLog.call(this, 'statistic', response.data)
     setLoading.call(this, false)
     this.executeNext()
   })
@@ -177,7 +171,7 @@ let statisticHandler = function () {
  */
 let exportHandler = function () {
   if (!this.vm.exp) {
-    addContent.call(this, 'result', `没有可导出结果集`)
+    addLog.call(this, 'info', `没有可导出结果集`)
     done.call(this)
     return
   }
@@ -189,7 +183,7 @@ let exportHandler = function () {
       let arr = [item.an, item.title]
       exportData.push(arr)
     })
-    addContent.call(this, 'result', `结果集导出完毕`)
+    addLog.call(this, 'info', `结果集导出完毕`)
     setLoading.call(this, false)
     Utils.exportExcel(exportData)
     this.executeNext()
@@ -197,28 +191,24 @@ let exportHandler = function () {
 }
 /**
  * 记录输入命令和结果
- * @param type 内容类型 cmd：命令类型    result：结果类型
- * @param words 记录的内容
- * @param statisticData   统计数据
+ * @param type 内容类型 cmd：命令类型    info：通知类型  statistic：统计类型   todo
+ * @param data 记录的内容
  */
-let addContent = function (type, words, statisticData) {
-  this.vm.contents.push({
-    id: Utils.idGenerator(),
-    type,
-    words,
-    statisticData
-  })
-  process.nextTick(() => {
-    this.vm.scroller.scrollTo(0, this.vm.scroller.maxScrollY)
+let addLog = function (type, data) {
+  this.vm.addLog({type, data}).then(() => {
+    process.nextTick(() => {
+      this.vm.scroller.scrollTo(0, this.vm.scroller.maxScrollY)
+    })
   })
 }
 /**
  * 记录输入的命令
  */
 let addHistory = function () {
-  this.vm.historyInput.push(this.input)
-  process.nextTick(() => {
-    this.vm.scroller.scrollTo(0, this.vm.scroller.maxScrollY)
+  this.vm.addHistory(this.input).then(() => {
+    process.nextTick(() => {
+      this.vm.scroller.scrollTo(0, this.vm.scroller.maxScrollY)
+    })
   })
 }
 /**

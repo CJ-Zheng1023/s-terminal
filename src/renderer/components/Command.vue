@@ -2,9 +2,9 @@
   <div class="box">
     <div class="box-body" ref="scroller">
       <div class="command-wrapper" @click="activePanel">
-        <div :class="['line', item.type === 'cmd' ? 'line-command' : 'line-result']" v-for="item in contents"
+        <div :class="['line', item.type === 'cmd' ? 'line-command' : 'line-result']" v-for="item in logs"
              :key="item.id">
-          <line-content :item="item"></line-content>
+          <component :log="item" :is="item.type"></component>
         </div>
         <div v-show="!isLoading" class="line line-command">
           <div ref="inputArea" class="input-area" @keydown="subscribeToKey"></div>
@@ -23,15 +23,14 @@
   </div>
 </template>
 <script>
+  import {mapState, mapActions} from 'vuex'
   import BScroll from 'better-scroll'
-  import Content from '@/components/Content'
+  import components from '@/components/log-renderer/index'
   import Commander from '@/common/scripts/commander'
 
   export default {
     props: ['code', 'ifRun'],
-    components: {
-      LineContent: Content
-    },
+    components,
     watch: {
       ifRun (newValue, oldValue) {
         if (newValue) {
@@ -48,14 +47,18 @@
     },
     data () {
       return {
-        historyInput: [],
-        contents: [],
         // -1表示未选中历史命令
         historyIndex: -1,
-        db: '',
-        exp: '',
         isLoading: false
       }
+    },
+    computed: {
+      ...mapState('Command', [
+        'historyInput',
+        'logs',
+        'db',
+        'exp'
+      ])
     },
     mounted () {
       this.$nextTick(() => {
@@ -79,7 +82,14 @@
       },
       subscribeToKey (e) {
         Commander.init(e, this)
-      }
+      },
+      ...mapActions('Command', [
+        'addLog',
+        'clearLogs',
+        'addHistory',
+        'switchDataBase',
+        'switchExp'
+      ])
     }
   }
 </script>
