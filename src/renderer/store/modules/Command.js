@@ -1,3 +1,4 @@
+import Utils from '@/common/scripts/utils'
 export default {
   namespaced: true,
   state () {
@@ -38,9 +39,12 @@ export default {
     clearLogs ({commit}) {
       commit('clearLogs')
     },
-    addHistory ({commit}, input) {
+    addHistory ({commit}, {input, isSuccess}) {
       return new Promise((resolve, reject) => {
         commit('addHistory', input)
+        if (isSuccess) {
+          Utils.addLatestCmd(input)
+        }
         resolve()
       })
     },

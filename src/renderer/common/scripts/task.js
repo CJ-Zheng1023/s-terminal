@@ -20,12 +20,13 @@ class Task {
     }
     let {cmd, cmdObj, params} = parse(this.input)
     addLog.call(this, 'cmd', this.input)
-    addHistory.call(this)
     if (!cmdObj) {
+      addHistory.call(this, false)
       addLog.call(this, 'info', `${cmd}是未识别的命令,输入help查看使用说明`)
       done.call(this)
       return
     }
+    addHistory.call(this)
     this.cmd = cmd
     this.cmdObj = cmdObj
     cmdObj.handler.apply(this, params)
@@ -191,7 +192,7 @@ let exportHandler = function () {
 }
 /**
  * 记录输入命令和结果
- * @param type 内容类型 cmd：命令类型    info：通知类型  statistic：统计类型   todo
+ * @param type 内容类型 cmd：命令类型    info：通知类型  statistic：统计类型 welcome：欢迎类型  todo
  * @param data 记录的内容
  */
 let addLog = function (type, data) {
@@ -203,9 +204,10 @@ let addLog = function (type, data) {
 }
 /**
  * 记录输入的命令
+ * @param isSuccess true成功执行   false未成功执行
  */
-let addHistory = function () {
-  this.vm.addHistory(this.input).then(() => {
+let addHistory = function (isSuccess = true) {
+  this.vm.addHistory({input: this.input, isSuccess}).then(() => {
     process.nextTick(() => {
       this.vm.scroller.scrollTo(0, this.vm.scroller.maxScrollY)
     })

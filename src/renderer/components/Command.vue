@@ -60,6 +60,9 @@
         'exp'
       ])
     },
+    created () {
+      this.addLog({type: 'welcome', data: ''})
+    },
     mounted () {
       this.$nextTick(() => {
         this.scroller = new BScroll(this.$refs.scroller, {
