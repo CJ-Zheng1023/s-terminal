@@ -62,7 +62,7 @@ export default {
   addLatestCmd (cmd) {
     const max = config.max_latest_cmd
     let cmdArray = stringToArray(getItem(LATEST_CMD))
-    if (cmdArray.length > max) {
+    if (cmdArray.length >= max) {
       cmdArray.shift()
     }
     cmdArray.push(cmd)

@@ -71,7 +71,6 @@ let parse = (input) => {
  */
 let clearHandler = function () {
   this.vm.clearLogs()
-  addHistory.apply(this)
   this.executeNext()
 }
 /**
