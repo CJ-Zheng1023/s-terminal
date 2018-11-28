@@ -4,14 +4,15 @@ import Executor from '@/common/scripts/executor'
  * 回车键命令
  * @param vm vue实例
  */
-let cmdEnter = (vm) => {
+let cmdEnter = (vm, e) => {
   let input = vm.$refs.inputArea.innerText
   vm.historyIndex = -1
   vm.$refs.inputArea.innerText = ''
   let executor = new Executor()
   executor.addTask(new Task(input, vm))
   executor.execute()
-  return false
+  // 阻止回车换行
+  e.preventDefault()
 }
 /**
  * 根据索引位置获取历史命令
@@ -30,9 +31,6 @@ let cmdUpArrow = (vm) => {
   vm.historyIndex = vm.historyIndex + 1
   let inputArea = vm.$refs.inputArea
   inputArea.innerText = getHistory(vm.historyInput, vm.historyIndex)
-  let range = window.getSelection()
-  range.selectAllChildren(inputArea)
-  range.collapseToEnd()
 }
 /**
  * 向下箭头命令
@@ -45,9 +43,6 @@ let cmdDownArrow = (vm) => {
   let inputArea = vm.$refs.inputArea
   vm.historyIndex = vm.historyIndex - 1
   inputArea.innerText = getHistory(vm.historyInput, vm.historyIndex)
-  let range = window.getSelection()
-  range.selectAllChildren(inputArea)
-  range.collapseToEnd()
 }
 /**
  *键盘Keycode对应的业务逻辑
@@ -59,9 +54,10 @@ const _keyMap = {
 }
 export default {
   init (e, vm) {
+    vm.scroller.scrollTo(0, vm.scroller.maxScrollY)
     let keyCode = e.keyCode
     let cmd = _keyMap[keyCode]
-    cmd && cmd(vm)
+    cmd && cmd(vm, e)
   },
   executeProcess (vm) {
     let code = vm.code

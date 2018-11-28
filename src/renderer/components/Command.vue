@@ -6,8 +6,8 @@
              :key="item.id">
           <line-content :item="item"></line-content>
         </div>
-        <div v-show="!isLoading" style="height: 23px;overflow: hidden;" class="line line-command">
-          <div ref="inputArea" style="user-modify: read-write-plaintext-only;" @keyup="subscribeToKey"></div>
+        <div v-show="!isLoading" class="line line-command">
+          <div ref="inputArea" class="input-area" @keydown="subscribeToKey"></div>
         </div>
         <div v-show="isLoading" class="line line-command">
           <span><i class="fa fa-spinner fa-pulse"></i>请稍后...</span>
@@ -74,10 +74,6 @@
       })
     },
     methods: {
-      // 输入回车键后清空节点
-      setEmpty (e) {
-        this.activePanel()
-      },
       activePanel (e) {
         this.$refs.inputArea.focus()
       },
@@ -171,5 +167,9 @@
     color: #aaa;
     line-height: 30px;
     padding: 5px 15px;
+  }
+  .input-area{
+    -webkit-user-modify: read-write-plaintext-only;
+    min-height: 23px;
   }
 </style>
