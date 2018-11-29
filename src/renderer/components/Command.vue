@@ -62,6 +62,7 @@
     },
     created () {
       this.addLog({type: 'welcome', data: ''})
+      // this.addLog({type: 'editor', data: 'hello'})
     },
     mounted () {
       this.$nextTick(() => {
