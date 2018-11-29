@@ -34,6 +34,7 @@
     "lowdb": "^1.0.0",
     "node-xlsx": "^0.12.1",
     "normalize.css": "^8.0.0",
+    "qs": "^6.6.0",
     "stompjs": "^2.3.3",
     "v-charts": "^1.19.0",
     "v-tooltip": "^2.0.0-rc.33",

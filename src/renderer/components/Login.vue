@@ -160,27 +160,14 @@
             this.login({
               username: this.loginForm.username,
               password: this.loginForm.password
-            }).then((code) => {
-              if (code === 2) {
-                this.$notify.error({
-                  title: '错误信息',
-                  message: '您输入的用户名或密码有误'
-                })
-              } else if (code === 0) {
-                this.$notify.error({
-                  title: '错误信息',
-                  message: '登录失败'
-                })
-              } else {
-                Utils.setUserName(this.user.name)
-                window.location.reload()
-              }
+            }).then((data) => {
+              Utils.setToken(data.data)
+              return this.queryUser()
+            }).then(data => {
+              Utils.setUserName(data.data.username)
+              window.location.reload()
               this.loginBtnLoading = false
             }).catch(e => {
-              this.$notify.error({
-                title: '错误信息',
-                message: '登录失败'
-              })
               this.loginBtnLoading = false
             })
           } else {
@@ -189,6 +176,7 @@
         })
       },
       ...mapActions('User', [
+        'queryUser',
         'register',
         'login'
       ])
