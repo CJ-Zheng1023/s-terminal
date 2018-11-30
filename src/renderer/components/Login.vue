@@ -1,7 +1,6 @@
 <template>
   <div class="mask">
     <div class="box">
-      <i class="fa fa-close" @click="close"></i>
       <div v-show="showLoginForm">
         <div class="box-header">
           <h2 class="title">用 户 登 录</h2>
@@ -110,9 +109,6 @@
         this.$refs['registerForm'].resetFields()
         this.showLoginForm = !this.showLoginForm
       },
-      close () {
-        this.$emit('close')
-      },
       submitRegisterForm () {
         this.registerBtnLoading = true
         this.$refs['registerForm'].validate((valid) => {
@@ -165,8 +161,8 @@
               return this.queryUser()
             }).then(data => {
               Utils.setUserName(data.data.username)
-              window.location.reload()
               this.loginBtnLoading = false
+              this.$router.push({path: '/command'})
             }).catch(e => {
               this.loginBtnLoading = false
             })
@@ -185,13 +181,9 @@
 </script>
 <style scoped>
   .mask {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, .5);
-    z-index: 2;
+    position: relative;
+    height: 100%;
+    background-color: #2f3136;
   }
 
   .box {
@@ -203,18 +195,6 @@
     padding: 15px 50px;
     background-color: #fff;
     border-radius: 4px;
-  }
-
-  .box > i {
-    position: absolute;
-    right: 7px;
-    top: 5px;
-    cursor: pointer;
-    color: #dddddd;
-  }
-
-  .box > i:hover {
-    transform: scale(1.2);
   }
 
   .box-header .title {

@@ -29,7 +29,6 @@
   import Commander from '@/common/scripts/commander'
 
   export default {
-    props: ['code', 'ifRun'],
     components,
     watch: {
       ifRun (newValue, oldValue) {

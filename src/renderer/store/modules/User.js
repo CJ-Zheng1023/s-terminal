@@ -1,15 +1,21 @@
 import axios from '@/common/scripts/axios'
+import Utils from '@/common/scripts/utils'
 const MODULE_CONTEXT = '/admin-service'
 export default {
   namespaced: true,
   state () {
     return {
-      user: {}
+      user: {
+        username: Utils.getUserName()
+      }
     }
   },
   mutations: {
     login (state, data) {
-      state.user = data.user
+      state.user.username = data.username
+    },
+    logout (state) {
+      state.user.username = ''
     }
   },
   actions: {
@@ -34,7 +40,6 @@ export default {
         }, {
           headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(response => {
-          // commit('login', response.data)
           resolve(response.data)
         }).catch(e => {
           console.log(e)
@@ -45,12 +50,16 @@ export default {
     queryUser ({commit}) {
       return new Promise((resolve, reject) => {
         axios.post(`${MODULE_CONTEXT}/user/info`).then(response => {
+          commit('login', response.data.data)
           resolve(response.data)
         }).catch(e => {
           console.log(e)
           reject(e)
         })
       })
+    },
+    logout ({commit}) {
+      commit('logout')
     }
   }
 }
